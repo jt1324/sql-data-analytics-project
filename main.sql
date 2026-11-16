@@ -1,0 +1,20 @@
+-- Data Exploration
+
+SELECT
+    *
+FROM dim_customers
+LIMIT 100;
+
+SELECT
+    *
+FROM dim_products
+LIMIT 100;
+
+SELECT
+    *
+FROM FACT_sales
+LIMIT 100;
+
+
+-- Dimensions exploration
+
