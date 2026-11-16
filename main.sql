@@ -18,3 +18,14 @@ LIMIT 100;
 
 -- Dimensions exploration
 
+SELECT
+    DISTINCT country
+FROM dim_customers;
+
+SELECT
+    DISTINCT category,
+    subcategory,
+    product_name
+FROM dim_products
+ORDER BY category;
+
