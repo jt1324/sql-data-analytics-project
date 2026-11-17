@@ -100,3 +100,60 @@ SELECT
 FROM dim_customers
 
 
+-- Magnitude Analysis
+
+SELECT 
+    country,
+    printf('%,d', COUNT(DISTINCT( customer_id))) AS qty_customers
+FROM dim_customers
+GROUP BY country
+ORDER BY 2 DESC;
+
+SELECT 
+    DISTINCT gender,
+    printf('%,d', COUNT(DISTINCT( customer_id))) AS qty_customers
+FROM dim_customers
+GROUP BY gender
+ORDER BY 2 DESC;
+
+SELECT 
+    DISTINCT category,
+    printf('%,d', COUNT(DISTINCT( product_id))) AS qty_products
+FROM dim_products
+GROUP BY category
+ORDER BY 2 DESC;
+
+SELECT 
+    DISTINCT category,
+    printf('%,d', AVG( cost)) AS avg_cost
+FROM dim_products
+GROUP BY category
+ORDER BY 2 DESC;
+
+SELECT
+    p.category,
+    printf('%,d', SUM(s.sales_amount)) AS revenue
+FROM fact_sales s
+LEFT JOIN dim_products p
+    ON s.product_key = p.product_key
+GROUP BY p.category
+ORDER BY s.sales_amount DESC;
+
+SELECT
+    c.customer_key,
+    (c.first_name || ' ' || c.last_name) AS customer_name,
+    printf('%,d', SUM(s.sales_amount)) AS revenue    
+FROM fact_sales s
+    LEFT JOIN dim_customers c
+        ON s.customer_key = c.customer_key
+GROUP BY c.customer_key
+ORDER BY SUM(s.sales_amount) DESC;
+
+SELECT
+    c.country,
+    printf('%,d', SUM(s.quantity)) AS sold_items
+FROM fact_sales s
+    LEFT JOIN dim_customers c
+        ON s.customer_key = c.customer_key
+GROUP BY c.country
+ORDER BY SUM(s.quantity) DESC;
