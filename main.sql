@@ -157,3 +157,72 @@ FROM fact_sales s
         ON s.customer_key = c.customer_key
 GROUP BY c.country
 ORDER BY SUM(s.quantity) DESC;
+
+
+-- Ranking analysis
+
+SELECT
+    p.product_name AS product,
+    printf('%,d', SUM(s.sales_amount)) AS revenue
+FROM fact_sales s
+    LEFT JOIN dim_products p
+        ON s.product_key = p.product_key
+GROUP BY p.product_name
+ORDER BY SUM(s.sales_amount) DESC
+LIMIT 5;
+
+SELECT
+    p.product_name AS product,
+    printf('%,d', SUM(s.sales_amount)) AS revenue
+FROM fact_sales s
+    LEFT JOIN dim_products p
+        ON s.product_key = p.product_key
+GROUP BY p.product_name
+ORDER BY SUM(s.sales_amount) 
+LIMIT 5;
+
+SELECT
+    *
+FROM (
+    SELECT
+        p.product_name AS product,
+        printf('%,d', SUM(s.sales_amount)) AS revenue,
+        ROW_NUMBER() OVER( ORDER BY SUM(s.sales_amount) DESC
+        ) AS rank
+    FROM fact_sales s
+        LEFT JOIN dim_products p
+            ON s.product_key = p.product_key
+    GROUP BY p.product_name)
+WHERE rank <= 5;
+
+SELECT
+    *
+FROM (
+    SELECT
+        c.customer_key,
+        (c.first_name || ' ' || c.last_name) AS customer,
+        printf('%,d', SUM(s.sales_amount)) AS revenue,
+        ROW_NUMBER() OVER(ORDER BY SUM(s.sales_amount) DESC
+        ) AS rank
+    FROM fact_sales s
+        LEFT JOIN dim_customers c
+            ON s.customer_key = c.customer_key
+    GROUP BY c.customer_key)
+WHERE rank <= 10
+
+UNION ALL
+
+SELECT
+    *
+FROM (
+    SELECT
+        c.customer_key,
+        (c.first_name || ' ' || c.last_name) AS customer,
+        printf('%,d', SUM(s.sales_amount)) AS revenue,
+        ROW_NUMBER() OVER(ORDER BY SUM(s.sales_amount)
+        ) AS rank
+    FROM fact_sales s
+        LEFT JOIN dim_customers c
+            ON s.customer_key = c.customer_key
+    GROUP BY c.customer_key)
+WHERE rank <= 3;
