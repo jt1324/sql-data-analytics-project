@@ -66,8 +66,9 @@ SELECT
 FROM dim_products;
 
 SELECT
-    printf('%,d', COUNT(DISTINCT customer_key)) AS num_cutomers
+    printf('%,d', COUNT(DISTINCT customer_key)) AS num_customers
 FROM dim_customers;
+
 
 -- Combining the results
 
@@ -97,7 +98,7 @@ FROM dim_products
 UNION ALL
 SELECT
     'Number of Customers' AS measure_name, printf('%,d', COUNT(DISTINCT customer_key)) AS measure_value
-FROM dim_customers
+FROM dim_customers;
 
 
 -- Magnitude Analysis
@@ -137,7 +138,7 @@ FROM fact_sales s
 LEFT JOIN dim_products p
     ON s.product_key = p.product_key
 GROUP BY p.category
-ORDER BY s.sales_amount DESC;
+ORDER BY SUM(s.sales_amount) DESC;
 
 SELECT
     c.customer_key,
